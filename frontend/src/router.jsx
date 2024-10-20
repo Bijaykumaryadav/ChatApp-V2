@@ -1,4 +1,4 @@
-import  Home  from "./pages/Home/Home";
+import  {Home}  from "./pages";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
