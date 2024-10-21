@@ -49,12 +49,9 @@ const SignIn = () => {
 
   return (
       <form
-        className="w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate__animated animate__fadeIn"
+        className="w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate__animated animate__fadeIn  px-6 pb-6"
         // onSubmit={handleSubmit}
       >
-        <h1 className="mb-6 text-2xl font-semibold text-center text-gray-900">
-          Sign In
-        </h1>
         <label className="w-full mb-4">
           Email:
           <input
@@ -66,8 +63,13 @@ const SignIn = () => {
           />
         </label>
         <label className="w-full mb-4">
-          Password:
-          <div className="relative">
+        <div className="flex items-center justify-between">
+          <span className="w-auto">Password</span>
+          <Link to="#" className="text-blue-500">
+            Forgot Password
+          </Link>
+        </div>          
+        <div className="relative">
             <input
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               type={showPassword ? "text" : "password"}

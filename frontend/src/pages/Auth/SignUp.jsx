@@ -1,47 +1,64 @@
 import { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
+import VerifyPage from "./VerifyPage";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showOverlay,setShowOverlay] = useState(false);
+
+  const handleoverlay = () => {
+    setShowOverlay(!showOverlay);
+  }
+
+  // Function to close overlay when clicking outside the modal
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains("overlay-background")) {
+      setShowOverlay(false);
+    }
+  };
 
   return (
+    <>
       <form
-        className="w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate__animated animate__fadeIn"
+        className="w-full px-6 pb-6 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate__animated animate__fadeIn"
         // onSubmit={handleSubmit}
       >
-        <h1 className="mb-6 text-2xl font-semibold text-center text-gray-900">
-          Sign Up
-        </h1>
-        <label className="w-full mb-4">
+        <label className="w-full mb-4" htmlFor="email">
           Email:
           <input
             className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="email"
             type="email"
+            value={email}
             placeholder="Enter Email"
             required
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="w-full mb-4">
+        <label className="w-full mb-4" htmlFor="name">
           Username:
           <input
             className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="name"
+            value={name}
             type="text"
             placeholder="Enter Username"
             required
             onChange={(e) => setName(e.target.value)}
           />
         </label>
-        <label className="w-full mb-4">
+        <label className="w-full mb-4" htmlFor="password">
           Password:
           <div className="relative">
             <input
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               type={showPassword ? "text" : "password"}
+              id="password"
+              value={password}
               placeholder="Enter Password"
               required
               onChange={(e) => setPassword(e.target.value)}
@@ -57,6 +74,7 @@ const SignUp = () => {
         <button
           type="submit"
           className="w-full py-2 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={handleoverlay}
         >
           Sign Up
         </button>
@@ -69,6 +87,18 @@ const SignUp = () => {
           Login with Google
         </button>
       </form>
+      {/* Overlay for the verification code */}
+      {showOverlay && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overlay-background"
+          onClick={handleOverlayClick}
+        >
+          <div className="w-full p-6 bg-white rounded-lg min-h-[300px] min-w-[300px] xs:max-w-[300px] sm:max-w-[424px] md:max-w-[424px]">
+            <VerifyPage email={email}/>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
