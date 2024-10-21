@@ -1,3 +1,4 @@
+import ForgotPassword from "./pages/Auth/ForgotPassword";
 import  Home  from "./pages/Home/Home";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -9,6 +10,13 @@ export const router = createBrowserRouter([
         index: true,
         element: <Home />,
       },
+      {
+        path: "users",
+        children: [{
+          path: "forgotpassword",
+          element: <ForgotPassword />
+        }]
+      }
     ],
   },
 ]);

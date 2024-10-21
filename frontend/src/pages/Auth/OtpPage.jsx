@@ -1,11 +1,11 @@
 import React from 'react'
 
-function ResetPassword() {
+function OtpPage() {
   return (
     <div>
-      
+      Enter Your Otp
     </div>
   )
 }
 
-export default ResetPassword
+export default OtpPage
