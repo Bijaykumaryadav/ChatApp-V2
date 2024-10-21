@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from "react-router-dom";
 
 function VerifyPage({email}) {
@@ -32,7 +32,7 @@ function VerifyPage({email}) {
           </label>
           <button
             className="flex justify-center items-center w-full text-[14px] leading-[48px] mt-[16px] font-semibold text-[#ffffff] h-[48px] transition-colors duration-300 bg-[#896B59] hover:bg-[#5b4234] tracking-[1.2%] rounded-[15px]"
-            onClick={handleVerify}
+            // onClick={handleVerify}
           >
             VERIFY ME &nbsp;
           </button>
