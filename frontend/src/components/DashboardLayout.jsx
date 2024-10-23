@@ -2,51 +2,62 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import ChatContainer from './ChatContainer';
-import ProfileContainer from './ProfileContainer';
-import { FaWhatsapp } from 'react-icons/fa';
+import Navbar from './Navbar';
+import ProfileOverlay from './ProfileOverlay';
 
 const DashboardLayout = () => {
   const [activeChat, setActiveChat] = useState(null); // Track selected chat
-  const [isProfileOpen, setProfileOpen] = useState(false); // Track profile visibility
-  const [isMobileView, setMobileView] = useState(false); // For small screen chat
+  const [isProfileOverlayOpen, setProfileOverlayOpen] = useState(false); // Overlay for logged-in user's profile
+  const [activeChatProfileOverlay, setActiveChatProfileOverlay] = useState(false); // Overlay for contact profile
 
-  // Function to open chat
   const openChat = (chat) => {
     setActiveChat(chat);
-    setMobileView(true); // In mobile, switch to chat view
   };
 
-  // Handle back to contact list on mobile view
-  const goBackToContacts = () => {
-    setMobileView(false);
-    setActiveChat(null);
+  const handleProfileClick = () => {
+    setProfileOverlayOpen(true);
+  };
+
+  const handleContactProfileClick = () => {
+    setActiveChatProfileOverlay(true);
+  };
+
+  const closeChat = () => {
+    setActiveChat(null); // Close chat and show sidebar again on small screens
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar for large screens, or for small screens if not in chat */}
-      <Sidebar
-        className={`md:flex ${isMobileView ? 'hidden' : 'flex'} w-full md:w-1/4`}
-        onChatSelect={openChat}
-        onProfileClick={() => setProfileOpen(true)}
-      />
+    <div className="flex flex-col h-screen">
+      {/* Navbar */}
+      <Navbar onProfileClick={handleProfileClick} />
 
-      {/* Show profile on profile picture click */}
-      {isProfileOpen ? (
-        <ProfileContainer className="flex-grow" onClose={() => setProfileOpen(false)} />
-      ) : (
-        // Chat container or placeholder (WhatsApp logo) for large screens
-        <div className="flex items-center justify-center flex-grow">
-          {activeChat ? (
+      {/* Main layout */}
+      <div className="flex flex-grow">
+        {/* Sidebar - Full width on small screens, fixed width on md+ screens */}
+        <div className={`md:max-w-[350px] w-full md:w-1/3 bg-gray-100 ${activeChat ? 'hidden sm:block' : 'block'}`}>
+          <Sidebar onChatSelect={openChat} />
+        </div>
+
+        {/* Chat Container visible only when a chat is selected on small screens */}
+        {activeChat && (
+          <div className="flex-grow w-full md:w-2/3">
             <ChatContainer
               chat={activeChat}
-              onBack={goBackToContacts}
-              isMobileView={isMobileView}
+              onContactProfileClick={handleContactProfileClick}
+              onBackClick={closeChat}
             />
-          ) : (
-            <FaWhatsapp size={64} className="text-green-500 xs:hidden md:block" />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
+
+      {/* Profile Overlay for logged-in user */}
+      {isProfileOverlayOpen && (
+        <ProfileOverlay onClose={() => setProfileOverlayOpen(false)} />
+      )}
+
+      {/* Profile Overlay for active contact */}
+      {activeChatProfileOverlay && (
+        <ProfileOverlay onClose={() => setActiveChatProfileOverlay(false)} />
       )}
     </div>
   );
