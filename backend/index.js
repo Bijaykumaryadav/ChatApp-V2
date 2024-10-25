@@ -3,10 +3,45 @@ const app = express();
 require("dotenv").config();
 const dbConnection = require("./config/db");
 const port = process.env.PORT || 8000;
+const cookieParser = require("cookie-parser");
+const passport = require("passport");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+require("./middleware/passport-google-strategy");
+
 
 // for routes to accept the json files
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(cookieParser());
+app.use(
+  session({
+    name: "chatApp",
+    secret: process.env.SESSION_COOKIE_SECRET,
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      maxAge: 1000 * 80 * 60,
+    },
+    store: new MongoStore(
+      {
+        mongoUrl: process.env.MONGO_URI,
+      },
+      {
+        mongooseConnection: dbConnection,
+        autoRemove: "disabled",
+      },
+      function (err) {
+        console.log(err || `successfully added mongostore `);
+      }
+    ),
+  })
+);
+
+//for using passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 dbConnection();

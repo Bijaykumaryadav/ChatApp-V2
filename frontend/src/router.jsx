@@ -1,5 +1,6 @@
 import DashboardLayout from "./components/DashboardLayout";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import GoogleCallback from "./pages/Auth/googleCallback";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ProfileImageUpload from "./pages/Dashboard/ProfileImageUpload";
 import Home from "./pages/Home/Home";
@@ -30,8 +31,17 @@ export const router = createBrowserRouter([
           },
           {
             path: "dashboard",
-            element: <DashboardLayout/>
-          }
+            element: <DashboardLayout />,
+          },
+          {
+            path: "google",
+            children: [
+              {
+                path: "googleCallback",
+                element: <GoogleCallback />,
+              },
+            ],
+          },
         ],
       },
     ],

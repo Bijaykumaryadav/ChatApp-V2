@@ -21,6 +21,10 @@ const SignUp = () => {
     }
   };
 
+    const handleGoogleSignIn = () => {
+      window.location.href = "http://localhost:8000/api/v1/users/auth/google";
+    };
+
   return (
     <>
       <form
@@ -81,7 +85,7 @@ const SignUp = () => {
         <button
           type="button"
           className="flex items-center justify-center w-full px-4 py-2 mt-4 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
-          // onClick={handleGoogleSignIn}
+          onClick={handleGoogleSignIn}
         >
           <FcGoogle className="w-5 h-5 mr-2" />
           Login with Google
