@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OtpPage from './OtpPage';
+import { toast } from "react-toastify";
+import Util from "../../../helpers/Util";
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -11,16 +13,28 @@ function ForgotPassword() {
     navigate('/'); // Redirect to home page
   };
 
-  const handleoverlay = () => {
-    setShowOverlay(!showOverlay);
-  };
+ const handleResetPassword = (e) => {
+   e.preventDefault();
 
-  // Function to close overlay when clicking outside the modal
-  const handleOverlayClick = (e) => {
-    if (e.target.classList.contains("overlay-background")) {
-      setShowOverlay(false);
-    }
-  };
+   Util.call_Post_by_URI(
+     "users/reset-password", // Endpoint for reset password email
+     { email }, // Payload with the email
+     (res, status) => {
+       if (status) {
+         toast.success(res.message, { autoClose: 2000 });
+         setShowOverlay(true); // Show OTP overlay
+         setTimeout(() => {
+           navigate("/auth");
+         }, 2000);
+       } else {
+         toast.error(res.message || "Failed to send reset password email", {
+           autoClose: 2000,
+         });
+       }
+     }
+   );
+ };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
@@ -32,7 +46,7 @@ function ForgotPassword() {
           <p className="mb-4 text-[14px] leading-[20px] text-[#5F6C72] text-center break-words w-full">
             Enter Your Email Address Associated With Your Account
           </p>
-          <form className="flex flex-col items-center w-full space-y-4">
+          <form className="flex flex-col items-center w-full space-y-4" onSubmit={handleResetPassword}>
             <label className="w-full mb-4">
               Email:
               <input
@@ -46,12 +60,11 @@ function ForgotPassword() {
             <button
               className="flex justify-center items-center w-full text-[14px] leading-[48px] mt-[16px] font-semibold text-[#ffffff] h-[48px] transition-colors duration-300 bg-blue-500 hover:bg-blue-800 tracking-[1.2%] rounded-[15px]"
               type="submit"
-              onClick={handleoverlay}
             >
               SEND OTP
             </button>
             <button
-              className="flex justify-center items-center w-full text-[14px] leading-[48px] mt-[16px] font-semibold text-blue-500 h-[48px] transition-colors duration-300 bg-white hover:bg-gray-200 tracking-[1.2%] rounded-[15px] border border-blue-500"
+              className="flex justify-center items-center w-full text-[14px] leading-[48px] mt-[16px] font-semibold text-red-500 h-[48px] transition-colors duration-300 bg-white hover:bg-gray-200 tracking-[1.2%] rounded-[15px] border border-blue-500"
               type="button"
               onClick={handleCancel}
             >
@@ -62,7 +75,6 @@ function ForgotPassword() {
           {showOverlay && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overlay-background"
-              onClick={handleOverlayClick}
             >
               <div className="w-full p-6 bg-white rounded-lg min-h-[300px] min-w-[300px] xs:max-w-[300px] sm:max-w-[424px] md:max-w-[424px]">
                 <OtpPage email={email} />

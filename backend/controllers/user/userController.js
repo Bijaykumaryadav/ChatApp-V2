@@ -46,8 +46,9 @@ module.exports.signUp = async (req, res) => {
     user.otp = otp; // Save OTP in user schema (optional)
     await user.save();
 
+
     // Save OTP in Otp collection
-    await Otp.create({ user: user._id, otp });
+    // await Otp.create({ user: user._id, otp });
 
     // Send OTP via email
     await verifyUserEmail(user, otp);
@@ -78,6 +79,7 @@ module.exports.verifyUser = async (req, res) => {
       return sendResponse(res, 404, false, "User does not exist", null, null);
     }
 
+
     // Mark the user as verified
     user.isVerified = true;
     await user.save();
@@ -100,6 +102,37 @@ module.exports.verifyUser = async (req, res) => {
     });
   }
 };
+
+module.exports.resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return sendResponse(res, 400, false, "Email is required");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return sendResponse(res, 404, false, "User not found");
+    }
+
+    if (user.isVerified) {
+      return sendResponse(res, 400, false, "User is already verified");
+    }
+
+    const otp = await generateOTP(user._id);
+    await Otp.updateOne({ user: user._id }, { otp }, { upsert: true });
+
+    // Send the OTP email
+    await verifyUserEmail(user, otp);
+
+    return sendResponse(res, 200, true, `Verification code resent to ${email}`);
+  } catch (error) {
+    console.error("Error resending OTP:", error);
+    return sendResponse(res, 500, false, "Failed to resend verification code");
+  }
+};
+
 
 //Sign in user
 module.exports.signInUser = async (req, res) => {
@@ -183,6 +216,10 @@ module.exports.verifyResetOtp = async (req, res) => {
     if (!user) {
       return sendResponse(res, 404, false, "User does not exist");
     }
+    //for otp mismatch
+    if (user.otp.toString() !== otp) {
+      return sendResponse(res, 404, false, "Otp mismatch", null, null);
+    }
 
     // OTP matched successfully; delete OTP and return user ID for frontend storage
     await Otp.deleteOne({ _id: otpRecord._id });
@@ -244,4 +281,24 @@ module.exports.googleSignUp = function (req, res) {
   res.redirect(
     `${process.env.FRONTEND_URL}/users/auth/googleCallback?${queryParams}`
   );
+};
+
+// send user details
+module.exports.sendUserDetails = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId)
+      .select(
+        "name  email profileImage token"
+      )
+    if (user) {
+      return sendResponse(res, 200, true, "User found", { user }, null);
+    }
+    return sendResponse(res, 404, "User not found sign up please", null, null);
+  } catch (error) {
+    console.error(`Error in sending user details ${error}`);
+    return sendResponse(res, 500, false, "Error in login", null, {
+      error,
+    });
+  }
 };

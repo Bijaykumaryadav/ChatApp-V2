@@ -1,48 +1,54 @@
 // import axios from "axios";
 import { useState } from "react";
 // import { toast } from "react-toastify";
-// import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import Util from "../../../helpers/Util";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../../features/auth/authSlice";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-//   const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const config = {
-  //       headers: {
-  //         "Content-type": "application/json",
-  //       },
-  //     };
-  //     const data = await axios.post(
-  //       "/api/v1/users/signIn",
-  //       { email, password },
-  //       config
-  //     );
-  //     console.log(data);
-
-  //     if (data.status === 200) {
-  //       toast.success("Signed In successfully!!");
-  //       localStorage.setItem("user", JSON.stringify(data.data.data.user));
-  //       navigate("/users/chat");
-  //     } else if (data.status === 201) {
-  //       toast.error("Email not verified");
-  //     } else if (data.status === 202) {
-  //       toast.error("Invalid password!!");
-  //     } else {
-  //       toast.error("Email not registered!");
-  //     }
-  //   } catch (error) {
-  //     console.log("Error during signIn:", error.message);
-  //   }
-  // };
-
+ const handleSignIn = async (e) => {
+   e.preventDefault();
+   try {
+    //  setIsLoading(true);
+     Util.call_Post_by_URI(
+       "users/signin",
+       {
+         email,
+         password,
+       },
+       (res, status) => {
+        //  setIsLoading(false);
+         if (status) {
+           dispatch(login({ userInfo: "", token: res.token }));
+           toast.success("Sign-in successful!", { autoClose: 2000 });
+           setTimeout(() => {
+             navigate("/users/dashboard");
+           }, 1000);
+         } else {
+           toast.error(res.message, { autoClose: 2000 });
+         }
+       }
+     );
+   } catch (error) {
+     toast.error("An error occurred while signing in. Please try again.", {
+       autoClose: 2000,
+     });
+     console.error(error);
+   }
+  //  setIsLoading(false);
+ };
+ 
   // const handleGoogleSignIn = () => {
   //   window.location.href = "http://localhost:8000/api/v1/users/auth/google";
   // };
@@ -50,7 +56,7 @@ const SignIn = () => {
   return (
     <form
       className="w-full px-6 pb-6 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate__animated animate__fadeIn"
-      // onSubmit={handleSubmit}
+      onSubmit={handleSignIn}
     >
       <label className="w-full mb-4">
         Email:
@@ -99,12 +105,6 @@ const SignIn = () => {
         <FcGoogle className="w-5 h-5 mr-2" />
         Login with Google
       </button>
-      {/* <Link
-          to="/users/forgotten-password"
-          className="block mt-4 text-center text-gray-600 hover:underline"
-        >
-          Forgot Password?
-        </Link> */}
     </form>
   );
 };

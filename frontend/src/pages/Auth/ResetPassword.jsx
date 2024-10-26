@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
 
-
 function ResetPassword() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -10,9 +9,9 @@ function ResetPassword() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
       const handleCancel = () => {
-        navigate("/"); // Redirect to home page
+        navigate("/");
       };
-    
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="w-full max-w-xl shadow-lg sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl rounded-lg border border-blue-500 bg-[#d9d9d9] pb-6">
@@ -52,7 +51,7 @@ function ResetPassword() {
                   className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
-                  value={confirmPassword} // Controlled input value
+                  value={confirmPassword} 
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
