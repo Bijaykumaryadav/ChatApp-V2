@@ -15,24 +15,41 @@ const Util = {
     localStorage.removeItem("token");
   },
   isTokenExpired: (token) => {
-    if (!token) return true; // No token means expired
+    console.log("Token received for expiration check:", token); // Debug log
+    if (!token || token.split(".").length !== 3) {
+      console.error("Invalid token format:", token);
+      return true; // Invalid token means expired
+    }
     const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000; // Current time in seconds
-    console.log("decoded.exp", decoded.exp);
     return decoded.exp < currentTime; // Check if the current time is greater than the expiration time
   },
+
   auth: async (dispatch) => {
+    const url = `${constants.URL}users/auth`;
     const token = await Util.getTokens();
-    if (token && !Util.isTokenExpired(token)) {
-      // Assuming `getUserInfo` fetches and returns user data if authenticated
-      const user = await constants.getUserInfo(token);
-      if (user) {
-        dispatch(login({ userInfo: user, token })); // Dispatch the login action to update `isAuthenticated`
-      }
-    } else {
+
+    if (Util.isTokenExpired(token)) {
       Util.removeToken();
+      return false; // Token expired
+    }
+
+    try {
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      dispatch(login({ userInfo: res.data.user , token}));
+      return true; // Successfully authenticated
+    } catch (error) {
+      console.log("Auth error:", error);
+      Util.removeToken();
+      return false; // Failed to authenticate
     }
   },
+
   call_get_with_uri_param: async (
     uri_with_param,
     callback,
@@ -150,6 +167,8 @@ const Util = {
     }
   },
 };
+
+
 
 export const callApi_get = async (url, token) => {
   return await axios.get(url, {

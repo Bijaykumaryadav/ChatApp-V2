@@ -7,7 +7,8 @@ const {
   resetPasswordEmail,
   verifyResetOtp,
   updatePassword,
-  resendOtp,
+  resendSignupOtp,
+  resendResetOtp,
   sendUserDetails
 } = require("../../controllers/user/userController");
 const passport = require("passport");
@@ -16,7 +17,8 @@ const router = express.Router();
 
 router.post("/signup", signUp);
 router.post("/verify", verifyUser);
-router.post("/resend-otp", resendOtp);
+router.post("/resend-signupotp", resendSignupOtp);
+router.post("/resend-resetotp", resendResetOtp);
 router.post("/signin", signInUser);
 
 router.get(

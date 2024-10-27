@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: "google",
+            path: "auth",
             children: [
               {
                 path: "googleCallback",

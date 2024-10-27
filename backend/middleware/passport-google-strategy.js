@@ -23,7 +23,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://127.0.0.1:8000/api/v1/users/auth/google/callback",
+      callbackURL: "http://127.0.0.1:8000/apis/v1/users/auth/google/callback",
       scope: ["profile", "email"],
     },
     async function (accessToken, refreshToken, profile, done) {
@@ -33,6 +33,7 @@ passport.use(
         const user = await User.findOne({
           email: profile.emails[0].value,
         });
+        const profileImage = profile.photos && profile.photos[0].value;
         if (user) {
           //Serialize user into the session
           return done(null, user);
@@ -41,6 +42,9 @@ passport.use(
             name: profile.displayName,
             email: profile.emails[0].value,
             password: crypto.randomBytes(20).toString("hex"),
+            profileImage,
+            isVerified: true,
+            authToken: crypto.randomBytes(32).toString("hex"),
           });
           //Serialize user into the session
           return done(null, newUser);

@@ -67,7 +67,7 @@ const handleSignUp = async (e) => {
   };
 
     const handleGoogleSignIn = () => {
-      window.location.href = "http://localhost:8000/api/v1/users/auth/google";
+      window.location.href = "http://localhost:8000/apis/v1/users/auth/google";
     };
 
   return (
@@ -82,6 +82,7 @@ const handleSignUp = async (e) => {
             className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="email"
             type="email"
+            name="email"
             value={email}
             placeholder="Enter Email"
             required
@@ -89,10 +90,11 @@ const handleSignUp = async (e) => {
           />
         </label>
         <label className="w-full mb-4" htmlFor="name">
-          Username:
+          <div className="mt-2">Username:</div>
           <input
             className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="name"
+            name="name"
             value={name}
             type="text"
             placeholder="Enter Username"
@@ -101,12 +103,13 @@ const handleSignUp = async (e) => {
           />
         </label>
         <label className="w-full mb-4" htmlFor="password">
-          Password:
+          <div className="mt-2">Password:</div>
           <div className="relative">
             <input
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               type={showPassword ? "text" : "password"}
               id="password"
+              name="password"
               value={password}
               placeholder="Enter Password"
               required

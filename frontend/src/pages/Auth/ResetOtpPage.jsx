@@ -1,39 +1,36 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
-import Util from "../../../helpers/Util";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Util from '../../../helpers/Util';
 
-function VerifyPage({ email, setShowOverlay }) {
+function OtpPage({email}) {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
+  const [showOverlay,setShowOverlay] = useState(false);
 
-  const handleVerify = (e) => {
+  const handleResetVerify = (e) => {
     e.preventDefault();
     try {
-      Util.call_Post_by_URI(
-        "users/verify",
-        { otp },
-        (res, status) => {
-          if (status && res?.success) {
-            toast.success(res.message, { autoClose: 2000 });
-            setTimeout(() => {
-              navigate(0);
-            }, 2000);
-          } else {
-            toast.error(res.message, { autoClose: 2000 });
-          }
+      Util.call_Post_by_URI("users/verify-resetotp", { otp }, (res, status) => {
+        console.log("API Response:", res); // Add this line
+        if (status && res?.success) {
+          sessionStorage.setItem("resetToken", res.token);
+          setTimeout(() => {
+            navigate("/users/resetpassword");
+          }, 2000);
+        } else {
+          toast.error(res.message, { autoClose: 2000 });
         }
-      );
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
-  // New function to handle resend code
+    // New function to handle resend code
   const handleResendCode = () => {
     Util.call_Post_by_URI(
-      "/users/resend-signupotp",
+      "users/resend-resetotp",
       { email },
       (res, status) => {
         if (status && res?.success) {
@@ -41,7 +38,7 @@ function VerifyPage({ email, setShowOverlay }) {
             autoClose: 2000,
           });
         } else {
-          toast.error(res?.message || "Failed to resend verification code");
+          toast.error(res?.message);
         }
       }
     );
@@ -49,19 +46,23 @@ function VerifyPage({ email, setShowOverlay }) {
 
   return (
     <div className="flex flex-col items-center justify-center bg-[#D9D9D9] shadow-lg min-w-[280px] xs:w-full xs:max-w-xs sm:max-w-[424px] md:max-w-[424px] border border-blue-500 rounded-md overflow-hidden transition-all duration-300 pb-6">
+      {/* Form Content */}
       <div className="w-full p-4">
         <h2 className="text-[20px] leading-[28px] mb-4 flex justify-center">
-          Verify Your Email Address
+          Otp verification
         </h2>
         <p className="mb-4 text-[14px] leading-[20px] text-[#5F6C72] text-center break-words w-full max-w-[360px]">
-          Please enter the verification code sent to {email}.
+          Please enter the Reset Password otp sent to {email}.
         </p>
 
-        <form className="flex flex-col items-center space-y-4 w-full max-w-[360px]" onSubmit={handleVerify}>
+        <form
+          className="flex flex-col items-center space-y-4 w-full max-w-[360px]"
+          onSubmit={handleResetVerify}
+        >
           <label className="relative w-full" htmlFor="otp">
-            <div className="flex justify-between items-center text-[14px] leading-[20px] text-[#191c1f]" htmlFor="otp">
-              <span>Verification Code</span>
-              <Link to="#" onClick={handleResendCode} className="text-blue-500">
+            <div className="flex justify-between items-center text-[14px] leading-[20px] text-[#191c1f]">
+              <span>Enter Otp</span>
+              <Link to="#" className="text-blue-500" onClick={handleResendCode}>
                 Resend Code
               </Link>
             </div>
@@ -75,10 +76,8 @@ function VerifyPage({ email, setShowOverlay }) {
               onChange={(e) => setOtp(e.target.value)}
             />
           </label>
-          <button
-            className="flex justify-center items-center w-full text-[14px] leading-[48px] mt-[16px] font-semibold text-[#ffffff] h-[48px] transition-colors duration-300 bg-blue-500 hover:bg-blue-800 tracking-[1.2%] rounded-[15px]"
-          >
-            VERIFY ME &nbsp;
+          <button className="flex justify-center items-center w-full text-[14px] leading-[48px] mt-[16px] font-semibold text-[#ffffff] h-[48px] transition-colors duration-300 bg-blue-500 hover:bg-blue-800 tracking-[1.2%] rounded-[15px]">
+            RESET PASSWORD &nbsp;
           </button>
           <button
             type="button"
@@ -93,4 +92,4 @@ function VerifyPage({ email, setShowOverlay }) {
   );
 }
 
-export default VerifyPage;
+export default OtpPage

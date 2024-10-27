@@ -6,7 +6,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import Util from "../../../helpers/Util";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { login } from "../../../features/auth/authSlice";
 
 const SignIn = () => {
@@ -15,7 +15,6 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
 
  const handleSignIn = async (e) => {
    e.preventDefault();
@@ -49,27 +48,30 @@ const SignIn = () => {
   //  setIsLoading(false);
  };
  
-  // const handleGoogleSignIn = () => {
-  //   window.location.href = "http://localhost:8000/api/v1/users/auth/google";
-  // };
+    const handleGoogleSignIn = () => {
+      window.location.href = "http://localhost:8000/apis/v1/users/auth/google";
+    };
 
   return (
     <form
       className="w-full px-6 pb-6 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl animate__animated animate__fadeIn"
       onSubmit={handleSignIn}
     >
-      <label className="w-full mb-4">
+      <label className="w-full mb-4" htmlFor="email">
         Email:
         <input
           className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="email"
           placeholder="Enter Email"
+          id="email"
+          name="email"
+          value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
         />
       </label>
-      <label className="w-full mb-4">
-        <div className="flex items-center justify-between">
+      <label className="w-full mb-4" htmlFor="password">
+        <div className="flex items-center justify-between mt-2">
           <span className="w-auto">Password</span>
           <Link to="/users/forgotpassword" className="text-blue-500">
             Forgot Password
@@ -78,6 +80,9 @@ const SignIn = () => {
         <div className="relative">
           <input
             className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="password"
+            name="password"
+            value={password}
             type={showPassword ? "text" : "password"}
             placeholder="Enter Password"
             required
@@ -100,7 +105,7 @@ const SignIn = () => {
       <button
         type="button"
         className="flex items-center justify-center w-full px-4 py-2 mt-4 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
-        //   onClick={handleGoogleSignIn}
+        onClick={handleGoogleSignIn}
       >
         <FcGoogle className="w-5 h-5 mr-2" />
         Login with Google

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import OtpPage from './OtpPage';
+import OtpPage from './ResetOtpPage';
 import { toast } from "react-toastify";
 import Util from "../../../helpers/Util";
 
@@ -22,10 +22,7 @@ function ForgotPassword() {
      (res, status) => {
        if (status) {
          toast.success(res.message, { autoClose: 2000 });
-         setShowOverlay(true); // Show OTP overlay
-         setTimeout(() => {
-           navigate("/auth");
-         }, 2000);
+         setShowOverlay(true); 
        } else {
          toast.error(res.message || "Failed to send reset password email", {
            autoClose: 2000,
@@ -47,11 +44,14 @@ function ForgotPassword() {
             Enter Your Email Address Associated With Your Account
           </p>
           <form className="flex flex-col items-center w-full space-y-4" onSubmit={handleResetPassword}>
-            <label className="w-full mb-4">
+            <label className="w-full mb-4" htmlFor='email'>
               Email:
               <input
                 className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="email"
+                id='email'
+                name="email"
+                value={email}
                 placeholder="Enter Email"
                 required
                 onChange={(e) => setEmail(e.target.value)}
