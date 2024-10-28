@@ -9,7 +9,8 @@ const {
   updatePassword,
   resendSignupOtp,
   resendResetOtp,
-  sendUserDetails
+  sendUserDetails,
+  searchUser,
 } = require("../../controllers/user/userController");
 const passport = require("passport");
 
@@ -43,5 +44,10 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   sendUserDetails
 );
+
+router.get("/search-user",
+  passport.authenticate("jwt", { session: false }),
+  searchUser);
+
 
 module.exports = router;

@@ -1,14 +1,45 @@
-import React, { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { FaSearch } from "react-icons/fa";
+import Util from "../../helpers/Util";
 
 const Sidebar = ({ onChatSelect }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const contacts = ['Alice', 'Bob', 'Charlie']; // Dummy contacts
+  const [searchQuery, setSearchQuery] = useState("");
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Filter contacts based on search query
-  const filteredContacts = contacts.filter((contact) =>
-    contact.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (!searchQuery) {
+        setContacts([]); // Clear contacts if no search query
+        return;
+      }
+
+      setLoading(true); // Set loading state to true
+
+      try {
+        // Call API with the search query as a parameter
+        await Util.call_get_with_uri_param(
+          `users/search-user?search=${searchQuery}`,
+          (res, status) => {
+            if (status && res?.users) {
+              console.log("Users fetched successfully:", res.users);
+              setContacts(res.users);
+            } else {
+              console.error("No users found");
+              setContacts([]); // Clear contacts if no users found
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        setContacts([]); // Clear contacts on error
+      } finally {
+        setLoading(false); // Set loading state back to false
+      }
+    };
+
+    fetchContacts();
+  }, [searchQuery]);
 
   return (
     <div className="flex flex-col w-full h-full p-4 bg-gray-100">
@@ -24,16 +55,18 @@ const Sidebar = ({ onChatSelect }) => {
         />
       </div>
 
-      {/* Contact list - Make this part scrollable */}
+      {/* Contact List - Scrollable and Dynamic */}
       <ul className="flex-grow overflow-y-auto">
-        {filteredContacts.length > 0 ? (
-          filteredContacts.map((contact, index) => (
+        {loading ? (
+          <li className="text-gray-500">Loading...</li>
+        ) : contacts.length > 0 ? (
+          contacts.map((contact) => (
             <li
-              key={index}
+              key={contact._id}
               className="p-2 border-b border-gray-300 cursor-pointer hover:bg-gray-200"
               onClick={() => onChatSelect(contact)}
             >
-              {contact}
+              {contact.name}
             </li>
           ))
         ) : (

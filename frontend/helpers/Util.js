@@ -4,18 +4,19 @@ import {jwtDecode} from 'jwt-decode';
 import { toast } from "react-toastify";
 import { login } from "../features/auth/authSlice";
 
-// const token = useSelector((state) => state.user.token);
+// const token = useSelector((state) => state.auth.token);
 
 const Util = {
   getTokens: async () => {
-    const token = localStorage.getItem("token") || "";
+    const token = localStorage.getItem("token");
+    // console.log(token);
     return token;
   },
   removeToken: () => {
     localStorage.removeItem("token");
   },
   isTokenExpired: (token) => {
-    console.log("Token received for expiration check:", token); // Debug log
+    // console.log("Token received for expiration check:", token); // Debug log
     if (!token || token.split(".").length !== 3) {
       console.error("Invalid token format:", token);
       return true; // Invalid token means expired
@@ -28,8 +29,10 @@ const Util = {
   auth: async (dispatch) => {
     const url = `${constants.URL}users/auth`;
     const token = await Util.getTokens();
+    // console.log(token);
 
     if (Util.isTokenExpired(token)) {
+      // console.log(token);
       Util.removeToken();
       return false; // Token expired
     }

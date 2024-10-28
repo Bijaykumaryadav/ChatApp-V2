@@ -373,9 +373,11 @@ module.exports.sendUserDetails = async (req, res) => {
     const userId = decoded._id;
 
     // Find the user in the database
-    const user = await User.findById(userId).select("name email profileImage token");
+    const user = await User.findById(userId).select("name email profileImage");
+    console.log(user);
+
     if (user) {
-      return sendResponse(res, 200, true, "User found", { user }, null);
+      return sendResponse(res, 200, true, "User found", { user , token }, null);
     }
     
     return sendResponse(res, 404, false, "User not found. Sign up please.", null, null);
@@ -392,3 +394,53 @@ module.exports.sendUserDetails = async (req, res) => {
     return sendResponse(res, 500, false, "Error in fetching user details", null, { error });
   }
 };
+
+module.exports.searchUser = async (req, res) => {
+  try {
+    const searchQuery = req.query.search;
+
+    const token = req.headers.authorization?.split(" ")[1]; // Assuming "Bearer <token>"
+
+    if (!token) {
+      return sendResponse(res, 401, false, "No token provided", null, null);
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_Key); // Use your secret key here
+    const userId = decoded._id;
+
+    const user = await User.findById(userId);
+    // Ensure the user is authenticated
+    if (!user) {
+      return sendResponse(res, 401, false, "Unauthorized access");
+    }
+
+    // Build the search criteria and exclude the authenticated user
+    const keyword = searchQuery
+      ? {
+          $and: [
+            {
+              _id: { $ne: userId }, // Exclude the authenticated user
+            },
+            {
+              $or: [
+                { name: { $regex: searchQuery, $options: "i" } },
+                { email: { $regex: searchQuery, $options: "i" } },
+              ],
+            },
+          ],
+        }
+      : { _id: { $ne: userId } }; // If no search query, just exclude the user
+
+    // Fetch users excluding passwords
+    const users = await User.find(keyword).select("-password");
+
+    console.log(users);
+
+    sendResponse(res, 200, true, "Users fetched successfully", { users });
+  } catch (error) {
+    console.error("Error in user search:", error);
+    sendResponse(res, 500, false, "Failed to fetch users", { error });
+  }
+};
+

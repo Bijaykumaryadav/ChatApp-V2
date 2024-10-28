@@ -7,7 +7,7 @@ const messageSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true, // Ensure that at least one participant is present
+        required: true,
       },
     ],
     messages: [
@@ -15,36 +15,37 @@ const messageSchema = new mongoose.Schema(
         sender: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
-          required: true, // Ensure that sender is always provided
+          required: true,
         },
         content: {
           type: String,
           trim: true,
-          required: true, // Ensure that content is not empty
+          required: true,
         },
         timestamp: {
           type: Date,
-          default: Date.now, // Automatically set the timestamp to now
+          default: Date.now,
         },
         status: {
           type: String,
-          enum: ["sent", "delivered", "read"], // Message status options
-          default: "sent", // Default status when message is sent
+          enum: ["sent", "delivered", "read"],
+          default: "sent",
         },
         attachments: [
           {
-            type: String, // URL or path to the attachment
+            type: String,
             required: false,
           },
         ],
       },
     ],
     latestMessage: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Message", // Reference to the latest message
+      sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      content: String,
+      timestamp: { type: Date, default: Date.now },
     },
   },
-  { timestamps: true } // Automatically manage createdAt and updatedAt fields
+  { timestamps: true }
 );
 
 // Create a model from the schema

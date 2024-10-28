@@ -1,15 +1,13 @@
-const Chat = require("../models/messageSchema");
-const User = require("../models/userSchema");
+// controllers/chatController.js
+const Chat = require("../../models/messageSchema");
+const User = require("../../models/userSchema");
 const { sendResponse } = require("../../utils/sendResponse");
 
-
-// Send a message in an existing chat or create a new chat
-// Send a message in an existing chat or create a new chat
-module.exports.sendMessage = async function (req, res) {
+module.exports.sendMessage = async (req, res) => {
   const { chatId, content } = req.body;
 
   if (!content || !chatId) {
-    console.log("Invalid data passed into the request");
+    console.log("Invalid data in request");
     return sendResponse(res, 400, false, "Invalid request data");
   }
 
@@ -19,7 +17,6 @@ module.exports.sendMessage = async function (req, res) {
   };
 
   try {
-    // Find the chat by ID and push the new message into the messages array
     const chat = await Chat.findByIdAndUpdate(
       chatId,
       { $push: { messages: newMessage }, latestMessage: newMessage },
@@ -27,7 +24,7 @@ module.exports.sendMessage = async function (req, res) {
     )
       .populate("participants", "name profileImage")
       .populate("messages.sender", "name profileImage")
-      .populate("latestMessage");
+      .populate("latestMessage.sender", "name profileImage");
 
     if (!chat) {
       return sendResponse(res, 404, false, "Chat not found");
@@ -40,13 +37,12 @@ module.exports.sendMessage = async function (req, res) {
   }
 };
 
-// Fetch all messages for a specific chat
-module.exports.fetchAllMessages = async function (req, res) {
+module.exports.fetchAllMessages = async (req, res) => {
   try {
     const chat = await Chat.findById(req.params.chatId)
       .populate("participants", "name profileImage")
       .populate("messages.sender", "name profileImage email")
-      .populate("latestMessage");
+      .populate("latestMessage.sender", "name profileImage email");
 
     if (!chat) {
       return sendResponse(res, 404, false, "Chat not found");
