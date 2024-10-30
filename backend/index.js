@@ -10,6 +10,7 @@ const MongoStore = require("connect-mongo");
 require("./middleware/passport-google-strategy");
 require("./middleware/passport-jwt-strategy");
 const cors = require("cors");
+const { chatSockets } = require("./middleware/chatSockets");
 
 // for routes to accept the json files
 app.use(express.urlencoded({ extended: true }));
@@ -23,7 +24,7 @@ app.use(
     saveUninitialized: false,
     resave: false,
     cookie: {
-      maxAge: 1000 * 80 * 60,
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     },
     store: new MongoStore(
       {
@@ -62,6 +63,8 @@ dbConnection();
 app.use("/apis/v1",require("./routes"));
 
 
-app.listen(port,() => {
+const server = app.listen(port,() => {
     console.log("Server is running on the port",port);
 })
+
+chatSockets(server);

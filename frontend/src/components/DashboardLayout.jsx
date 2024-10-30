@@ -14,7 +14,8 @@ const DashboardLayout = () => {
     useState(false);
 
   const openChat = (chat) => {
-    const { _id, name, profileImage, email } = chat; // Only required fields
+    console.log(chat);
+    const { _id, name, profileImage, email } = chat; // Only required fields 
     dispatch(setActiveChat({ _id, name, profileImage, email }));
   };
 

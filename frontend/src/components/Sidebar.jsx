@@ -1,45 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import Util from "../../helpers/Util";
+import { setSearchedUsers } from "../../features/chat/chatSlice";
+import { useDispatch, useSelector } from "react-redux";
+import UserView from "./UserView";
 
 const Sidebar = ({ onChatSelect }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [contacts, setContacts] = useState([]);
+  const contacts = useSelector((state) => state.chat.searchedUsers);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchContacts = async () => {
       if (!searchQuery) {
-        setContacts([]); // Clear contacts if no search query
+        dispatch(setSearchedUsers([]));
         return;
       }
 
-      setLoading(true); // Set loading state to true
-
+      setLoading(true);
       try {
-        // Call API with the search query as a parameter
         await Util.call_get_with_uri_param(
           `users/search-user?search=${searchQuery}`,
           (res, status) => {
             if (status && res?.users) {
-              console.log("Users fetched successfully:", res.users);
-              setContacts(res.users);
+              dispatch(setSearchedUsers(res.users));
             } else {
-              console.error("No users found");
-              setContacts([]); // Clear contacts if no users found
+              dispatch(setSearchedUsers([]));
             }
           }
         );
       } catch (error) {
-        console.error("Failed to fetch users:", error);
-        setContacts([]); // Clear contacts on error
+        dispatch(setSearchedUsers([]));
       } finally {
-        setLoading(false); // Set loading state back to false
+        setLoading(false);
       }
     };
 
     fetchContacts();
-  }, [searchQuery]);
+  }, [searchQuery, dispatch]);
+
+  const setSelectedChat = (user) => {
+    if (onChatSelect) onChatSelect(user);
+  };
 
   return (
     <div className="flex flex-col w-full h-full p-4 bg-gray-100">
@@ -55,19 +58,17 @@ const Sidebar = ({ onChatSelect }) => {
         />
       </div>
 
-      {/* Contact List - Scrollable and Dynamic */}
+      {/* Contact List */}
       <ul className="flex-grow overflow-y-auto">
         {loading ? (
           <li className="text-gray-500">Loading...</li>
         ) : contacts.length > 0 ? (
           contacts.map((contact) => (
-            <li
+            <UserView
               key={contact._id}
-              className="p-2 border-b border-gray-300 cursor-pointer hover:bg-gray-200"
-              onClick={() => onChatSelect(contact)}
-            >
-              {contact.name}
-            </li>
+              userId={contact._id}
+              handleFunction={() => setSelectedChat(contact)}
+            />
           ))
         ) : (
           <li className="text-gray-500">No contacts found</li>

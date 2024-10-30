@@ -8,9 +8,10 @@ const Navbar = ({ onProfileClick }) => {
   const dispatch = useDispatch();
 
   // Accessing profileImage from the Redux store
-  const profileImage = useSelector(
+  const profileImage =  useSelector(
     (state) => state.auth.userInfo?.profileImage
   );
+
 
   useEffect(() => {
     Util.call_get_with_uri_param("users/auth", (res, status) => {

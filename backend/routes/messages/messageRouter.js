@@ -5,15 +5,37 @@ const {
   sendMessage,
   fetchAllMessages,
 } = require("../../controllers/messages/messageController");
+const {
+  oneToOneChat,
+  fetchChat,
+} = require("../../controllers/chat/chatController");
 
 router.post(
-  "/chat/message",
+  "/",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/",
+  }),
+  oneToOneChat
+);
+
+router.get(
+  "/",
+  passport.authenticate("jwt", {
+    session: false,
+    failureRedirect: "/",
+  }),
+  fetchChat
+);
+
+router.post(
+  "/message",
   passport.authenticate("jwt", { session: false, failureRedirect: "/" }),
   sendMessage
 );
 
 router.get(
-  "/chat/message/:chatId",
+  "/message/:chatId",
   passport.authenticate("jwt", { session: false, failureRedirect: "/" }),
   fetchAllMessages
 );

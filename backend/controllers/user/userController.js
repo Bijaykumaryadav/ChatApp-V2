@@ -338,7 +338,7 @@ module.exports.updatePassword = async (req, res) => {
 };
 
 module.exports.googleSignUp = function (req, res) {
-  const { _id, name, email } = req.user;
+  const { _id, name, email ,profileImage } = req.user;
   const token = jwt.sign(req.user.toJSON(), process.env.JWT_SECRET_KEY, {
     expiresIn: "30d",
   });
@@ -347,6 +347,7 @@ module.exports.googleSignUp = function (req, res) {
     id: _id,
     name,
     email,
+    profileImage
     // jwttoken,
   };
   console.log(userData);

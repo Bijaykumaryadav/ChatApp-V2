@@ -1,54 +1,40 @@
 const mongoose = require("mongoose");
 
-// Define the Chat schema
 const messageSchema = new mongoose.Schema(
   {
-    participants: [
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    content: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+    status: {
+      type: String,
+      enum: ["sent", "delivered", "read"],
+      default: "sent",
+    },
+    attachments: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+        type: String,
+        required: false,
       },
     ],
-    messages: [
-      {
-        sender: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        content: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        timestamp: {
-          type: Date,
-          default: Date.now,
-        },
-        status: {
-          type: String,
-          enum: ["sent", "delivered", "read"],
-          default: "sent",
-        },
-        attachments: [
-          {
-            type: String,
-            required: false,
-          },
-        ],
-      },
-    ],
-    latestMessage: {
-      sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      content: String,
-      timestamp: { type: Date, default: Date.now },
+    chat: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-// Create a model from the schema
-const Chat = mongoose.model("Chat", messageSchema);
-
-module.exports = Chat;
+const Message = mongoose.model("Message", messageSchema);
+module.exports = Message;

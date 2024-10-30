@@ -45,7 +45,8 @@ passport.use(
             profileImage,
             isVerified: true,
             authToken: crypto.randomBytes(32).toString("hex"),
-          });
+          })
+          await newUser.save();
           //Serialize user into the session
           return done(null, newUser);
         }
