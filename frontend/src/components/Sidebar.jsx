@@ -1,75 +1,74 @@
-import React, { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
-import Util from "../../helpers/Util";
-import { setSearchedUsers } from "../../features/chat/chatSlice";
+// Sidebar.js
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import Util from "../../helpers/Util";
+import { chatsSelector, setChats } from "../../features/chat/chatSlice";
+import SearchBar from "./SearchBar";
 import UserView from "./UserView";
 
 const Sidebar = ({ onChatSelect }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const contacts = useSelector((state) => state.chat.searchedUsers);
-  const [loading, setLoading] = useState(false);
+  const initialUser = useSelector((state) => state.auth.userInfo);
+  const chats = useSelector(chatsSelector);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      if (!searchQuery) {
-        dispatch(setSearchedUsers([]));
-        return;
-      }
-
-      setLoading(true);
+    const fetchChats = async () => {
       try {
-        await Util.call_get_with_uri_param(
-          `users/search-user?search=${searchQuery}`,
-          (res, status) => {
-            if (status && res?.users) {
-              dispatch(setSearchedUsers(res.users));
-            } else {
-              dispatch(setSearchedUsers([]));
-            }
+        await Util.call_get_with_uri_param("chats", (data, status) => {
+          if (status) {
+            dispatch(setChats(data));
+          } else {
+            toast.error("Error fetching chats");
           }
-        );
+        });
       } catch (error) {
-        dispatch(setSearchedUsers([]));
-      } finally {
-        setLoading(false);
+        console.error("Error in fetching chats:", error);
+        toast.error("Internal Server Error!");
       }
     };
 
-    fetchContacts();
-  }, [searchQuery, dispatch]);
+    if (initialUser) fetchChats();
+  }, [initialUser, dispatch]);
 
-  const setSelectedChat = (user) => {
-    if (onChatSelect) onChatSelect(user);
+  const getName = (chat) => {
+    if (chat.isGroupChat) {
+      return {
+        name: chat.chatName,
+        profileImage:
+          chat.profileImage || "https://cdn-icons-png.flaticon.com/512/2352/2352167.png",
+      };
+    } else {
+      const otherUser = chat.users.find((user) => user._id !== initialUser._id);
+      return {
+        _id: otherUser?._id,
+        name: otherUser?.name || "Unknown User",
+        profileImage: otherUser?.profileImage || "https://via.placeholder.com/150",
+      };
+    }
   };
 
   return (
     <div className="flex flex-col w-full h-full p-4 bg-gray-100">
       {/* Search Bar */}
-      <div className="flex items-center mb-4">
-        <FaSearch className="mr-2 text-gray-500" />
-        <input
-          type="text"
-          placeholder="Search contacts"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-grow p-2 bg-gray-100 border-none rounded-md focus:outline-none"
-        />
-      </div>
+      <SearchBar onSelectUser={onChatSelect} />
 
       {/* Contact List */}
       <ul className="flex-grow overflow-y-auto">
-        {loading ? (
-          <li className="text-gray-500">Loading...</li>
-        ) : contacts.length > 0 ? (
-          contacts.map((contact) => (
-            <UserView
-              key={contact._id}
-              userId={contact._id}
-              handleFunction={() => setSelectedChat(contact)}
-            />
-          ))
+        {chats.length > 0 ? (
+          chats.map((chat) => {
+            const user = getName(chat);
+            // console.log("User is:",user)
+            // console.log("chatId",chat._id);
+            return (
+              <UserView
+                key={chat._id}
+                userId = {user._id}
+                searchedUser={user}
+                handleFunction={() => onChatSelect(chat)}
+              />
+            );
+          })
         ) : (
           <li className="text-gray-500">No contacts found</li>
         )}

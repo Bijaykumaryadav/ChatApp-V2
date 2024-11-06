@@ -1,43 +1,63 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import ScrollableFeed from "react-scrollable-feed";
 
-const MessageContainer = ({ currentUser, chat }) => {
-  const messages = useSelector((state) => state.chat.messageArray);
+const MessageContainer = ({ messages, currentUser, receiverUser, chat }) => {
+  console.log(messages);
+  // console.log("chat is : ", chat)
+
+  const scrollContainerRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to bottom on load
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current.scrollTop === 0) {
+      // Load older messages if needed
+    }
+  };
+
+  // Check if the message sender is the current user
+  const isCurrentUser = (message) => message?.sender?._id === currentUser?._id;
 
   return (
-    <div className="flex-grow p-2 overflow-y-scroll">
-      {messages.length === 0 ? (
-        <p className="text-center text-gray-500">No messages yet.</p>
-      ) : (
-        messages.map((msg, index) => {
-          // Ensure msg.sender exists
-          const sender = msg.sender || {};
-          return (
+    <div ref={scrollContainerRef} onScroll={handleScroll} className="h-[68vh]">
+      <ScrollableFeed className="pb-5 scrollbar-thin">
+        {messages && messages.length > 0 ? (
+          messages.map((message, index) => (
             <div
               key={index}
-              className={`flex items-end my-2 ${sender._id === currentUser._id ? "justify-end" : "justify-start"}`}
+              className={`flex items-start mb-2 ${
+                isCurrentUser(message) ? "justify-end" : "justify-start"
+              }`}
             >
-              {sender._id !== currentUser._id && (
+              {!isCurrentUser(message) && (
                 <img
-                  src={chat.profileImage}
+                  src={receiverUser?.profileImage || chat?.profileImage}
                   alt="Receiver profile"
-                  className="w-8 h-8 rounded-full mr-2"
+                  className="w-8 h-8 mr-2 rounded-full"
                 />
               )}
               <div
                 className={`max-w-xs p-2 rounded-lg ${
-                  sender._id === currentUser._id
+                  isCurrentUser(message)
                     ? "bg-green-500 text-white self-end"
                     : "bg-gray-200 text-gray-900"
                 }`}
               >
-                <strong>{sender.name}</strong>
-                <p>{msg.content}</p>
+                <p>{message?.content}</p>
               </div>
             </div>
-          );
-        })
-      )}
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No messages yet.</p>
+        )}
+      </ScrollableFeed>
     </div>
   );
 };

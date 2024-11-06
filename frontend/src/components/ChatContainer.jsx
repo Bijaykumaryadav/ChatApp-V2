@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setMessageArray } from "../../features/chat/chatSlice";
+import { activeChatSelector, setMessageArray } from "../../features/chat/chatSlice";
 import Util from "../../helpers/Util";
 import { toast } from "react-toastify";
 import useSocket from "../hooks/useSocket";
 import { FaArrowLeft } from "react-icons/fa";
-import MessageContainer from "./MessageContainer"; // Import the MessageContainer
+import MessageContainer from "./MessageContainer";
 
 const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
   const dispatch = useDispatch();
-  const socket = useSocket();
-  const messages = useSelector((state) => state.chat.messages);
+  const socket = useSocket(); // Using the singleton socket instance
+  const messages = useSelector((state) => state.chat.messageArray);
   const currentUser = useSelector((state) => state.auth.userInfo);
+  const receiverUser = useSelector(activeChatSelector);
+
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
+  console.log("Chat is is:",chat._id);
 
   const fetchAllMessages = async () => {
     try {
@@ -21,12 +26,13 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
       await Util.call_get_with_uri_param(
         messageUri,
         (data, success) => {
-          if (success && data.messages) {
-            dispatch(setMessageArray(data.messages)); // Ensure data.messages is an array
+          if (success) {
+            console.log("fetched data is",data);
+            dispatch(setMessageArray(data));
             socket.emit("joinChat", chat._id);
           } else {
             console.error("Failed to fetch messages", data);
-          }
+          } 
         },
         null,
         "json"
@@ -38,17 +44,32 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
   };
 
   useEffect(() => {
-    fetchAllMessages(); // Fetch messages initially
+    socket.emit("setup", currentUser);
+    socket.on("connected", () => setTyping(false));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stopTyping", () => setIsTyping(false));
 
-    // Add socket event listeners for real-time messaging
-    socket.on("newMessage", (message) => {
-      dispatch(setMessageArray([...messages, message])); // Update with new message
+    fetchAllMessages();
+
+    return () => {
+      socket.off("typing");
+      socket.off("stopTyping");
+    };
+  }, [chat._id]);
+
+  useEffect(() => {
+    socket.on("newMessage", (newMessageRec) => {
+      if (!chat || chat._id !== newMessageRec.chat._id) {
+        // If message is for another chat, show notification (implement as needed)
+      } else if (newMessageRec.sender._id !== currentUser._id) {
+        dispatch(setMessageArray([...messages, newMessageRec]));
+      }
     });
 
     return () => {
-      socket.off("newMessage"); // Clean up listener
+      socket.off("newMessage");
     };
-  }, [chat._id]); // Run only when chat._id changes
+  }, [chat, messages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -63,9 +84,11 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
       messageData,
       (data, success) => {
         if (success) {
-          dispatch(setMessageArray([...messages, data])); // Append new message
-          setNewMessage(""); // Clear input after sending
-          socket.emit("newMessage", data); // Emit new message
+          dispatch(setMessageArray([...messages, data]));
+          console.log("messages is ",...messages);
+          console.log("post data",data);
+          setNewMessage("");
+          socket.emit("newMessage", data);
         } else {
           console.error("Failed to send message", data);
         }
@@ -81,7 +104,7 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
     setTyping(true);
     socket.emit("typing", chat._id);
 
-    let lastTypingTime = new Date().getTime();
+    const lastTypingTime = new Date().getTime();
     setTimeout(() => {
       const timeNow = new Date().getTime();
       if (timeNow - lastTypingTime >= 3000 && typing) {
@@ -92,7 +115,7 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
   };
 
   return (
-    <div className="flex flex-col flex-grow h-full p-4 pb-[5vh] bg-white border border-gray-300 rounded-lg">
+    <div className="flex flex-col flex-grow p-4 pb-[5vh] bg-white border border-gray-300 rounded-lg overflow-visible h-[90vh]">
       <div className="flex items-center pb-2 mb-4 border-b">
         <FaArrowLeft
           className="block mr-4 text-gray-500 cursor-pointer md:hidden"
@@ -105,10 +128,14 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
           onClick={onContactProfileClick}
         />
         <h2 className="text-xl">{chat.name}</h2>
+        {isTyping && <p className="ml-4 text-sm text-gray-500">Typing...</p>}
       </div>
-
-      <MessageContainer messages={messages} currentUser={currentUser} chat={chat} /> {/* Render MessageContainer */}
-
+      <MessageContainer
+        messages={messages}
+        receiverUser={receiverUser}
+        currentUser={currentUser}
+        chat={chat}
+      />
       <div className="flex items-center mt-2 xl:mx-16">
         <input
           type="text"

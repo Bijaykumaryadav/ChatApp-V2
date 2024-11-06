@@ -21,7 +21,7 @@ const chatSlice = createSlice({
       state.searchedUsers = action.payload;
     },
     addMessage: (state, action) => {
-      state.messages.push(action.payload);
+      state.messageArray.push(action.payload);
     },
     setMessageArray: (state, action) => {
       const payload = action.payload;
@@ -36,7 +36,7 @@ const chatSlice = createSlice({
       if (Array.isArray(payload)) {
         const newChats = payload.filter(
           (chat) =>
-            !state.chats.some((existingChat) => existingChat.id === chat.id)
+            !state.chats.some((existingChat) => existingChat._id === chat._id)
         );
         state.chats = [...newChats, ...state.chats];
       } else if (typeof payload === "object") {
@@ -53,9 +53,15 @@ const chatSlice = createSlice({
   },
 });
 
+// Define selectors for easy access to slice state
+export const chatSelector = (state) => state.chat;
+export const activeChatSelector = (state) => state.chat.activeChat;
+export const messageArraySelector = (state) => state.chat.messageArray;
+export const searchedUsersSelector = (state) => state.chat.searchedUsers;
+export const chatsSelector = (state) => state.chat.chats;
+
 export const {
   setActiveChat,
-  setMessages,
   addMessage,
   setChats,
   setMessageArray,

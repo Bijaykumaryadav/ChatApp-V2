@@ -14,7 +14,6 @@ const DashboardLayout = () => {
     useState(false);
 
   const openChat = (chat) => {
-    console.log(chat);
     const { _id, name, profileImage, email } = chat; // Only required fields 
     dispatch(setActiveChat({ _id, name, profileImage, email }));
   };
@@ -32,7 +31,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Navbar onProfileClick={handleProfileClick} />
 
       <div className="flex flex-grow">
