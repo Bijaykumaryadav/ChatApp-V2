@@ -1,6 +1,11 @@
 {
   "rewrites": [
-    { "source": "/apis/v1/(.*)", "destination": "/backend/routes" },
-    { "source": "/(.*)", "destination": "/frontend/dist" }
+    { "source": "/apis/v1/(.*)", "destination": "/backend/apis/v1/$1" }
+  ],
+  "builds": [
+    {
+      "src": "backend/apis/v1/*.js",
+      "use": "@vercel/node"
+    }
   ]
 }
