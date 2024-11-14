@@ -1,7 +1,7 @@
 import Util from "../helpers/Util";
 
 const getApiUrl = () => {
-  return " https://chat-app-v2-1uxo.vercel.app/apis/v1/";
+  return "https://chat-app-v2-y76g.vercel.app/apis/v1/";
 };
 const constants = {
   URL: getApiUrl(),
