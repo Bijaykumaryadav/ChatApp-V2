@@ -1,9 +1,8 @@
 import Util from "../helpers/Util";
 
 const getApiUrl = () => {
-  return process.env.REACT_APP_API_URL || "http://localhost:8000/apis/v1/"; // Fallback for development
+  return "http://localhost:8000/apis/v1/";
 };
-
 const constants = {
   URL: getApiUrl(),
   getTokens: () => {
