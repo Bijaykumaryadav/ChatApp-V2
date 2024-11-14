@@ -1,7 +1,7 @@
 import Util from "../helpers/Util";
 
 const getApiUrl = () => {
-  return "https://chatapp-v2-vq9f.onrender.com/apis/v1/";
+  return "https://chat-app-v2-y76g.vercel.app/apis/v1/";
 };
 
 // const getApiUrl = () => {
