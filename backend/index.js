@@ -43,7 +43,7 @@ app.use(
 );
 
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL,"https://chat-app-v2-y76g.vercel.app/"], // Allow specific origin from environment variable
+  origin: [process.env.FRONTEND_URL], // Allow specific origin from environment variable
   methods: ["GET", "POST", "PUT", "DELETE"],
   optionsSuccessStatus: 200,
   exposedHeaders: ["Content-Disposition", "Content-Type"],
@@ -73,7 +73,7 @@ chatSockets(server);
 /*---------------------DEPLOYMENT-----------------------*/
 
 const __dirname1 = path.resolve();
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "Production") {
   app.use(express.static(path.join(__dirname1, "/frontend/dist")));
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname1, "frontend", "dist", "index.html"));
