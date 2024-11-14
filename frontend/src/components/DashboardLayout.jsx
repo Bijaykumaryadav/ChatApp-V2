@@ -14,7 +14,8 @@ const DashboardLayout = () => {
     useState(false);
 
   const openChat = (chat) => {
-    const { _id, name, profileImage, email } = chat; // Only required fields 
+      // console.log("chat is",chat); 
+    const { _id, name, profileImage, email } = chat;  
     dispatch(setActiveChat({ _id, name, profileImage, email }));
   };
 
@@ -46,9 +47,9 @@ const DashboardLayout = () => {
         {activeChat && (
           <div className="flex-grow w-full md:w-2/3">
             <ChatContainer
-              chat={activeChat} // Pass only the name to display
+              chat={activeChat} 
               onContactProfileClick={handleContactProfileClick}
-              onBackClick={closeChat} // Pass closeChat to handle back click
+              onBackClick={closeChat} 
             />
           </div>
         )}

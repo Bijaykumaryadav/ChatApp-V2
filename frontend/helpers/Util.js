@@ -44,6 +44,7 @@ const Util = {
           "Content-Type": "application/json",
         },
       });
+      // console.log("userInfo",res);
       dispatch(login({ userInfo: res.data.user , token}));
       return true; // Successfully authenticated
     } catch (error) {

@@ -9,7 +9,7 @@ import MessageContainer from "./MessageContainer";
 
 const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
   const dispatch = useDispatch();
-  const socket = useSocket(); // Using the singleton socket instance
+  const socket = useSocket();
   const messages = useSelector((state) => state.chat.messageArray);
   const currentUser = useSelector((state) => state.auth.userInfo);
   const receiverUser = useSelector(activeChatSelector);

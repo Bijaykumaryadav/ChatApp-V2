@@ -4,15 +4,15 @@ import ScrollableFeed from "react-scrollable-feed";
 import { setMessageArray } from "../../features/chat/chatSlice";
 import useSocket from "../hooks/useSocket";
 
-const MessageContainer = ({ messages, currentUser, receiverUser, chat }) => {
+const MessageContainer = ({ messages, currentUser, chat }) => {
   const dispatch = useDispatch();
   const scrollContainerRef = useRef(null);
   const socket = useSocket();
+  // console.log("Receiver user",receiverUser);
 
 
   const handleScroll = () => {
     if (scrollContainerRef.current.scrollTop === 0) {
-      // Load older messages if needed
     }
   };
 
@@ -30,7 +30,7 @@ const MessageContainer = ({ messages, currentUser, receiverUser, chat }) => {
             >
               {!isCurrentUser(message) && (
                 <img
-                  src={receiverUser?.profileImage || chat?.profileImage}
+                  src={chat?.profileImage}
                   alt="Receiver profile"
                   className="w-8 h-8 mr-2 rounded-full"
                 />

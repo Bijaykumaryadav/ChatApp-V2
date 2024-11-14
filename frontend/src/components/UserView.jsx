@@ -50,7 +50,7 @@ const UserView = ({ userId, searchedUser, handleFunction }) => {
 
   return (
     <div
-      className="container flex items-center gap-2 m-1 border-b border-gray-400 cursor-pointer hover:bg-gray-400"
+      className="flex items-center gap-2 border-b border-gray-400 cursor-pointer hover:bg-gray-400 m-4"
       onClick={() => createChat(searchedUser._id)}
     >
       <div className="p-2 imageContainer" onClick={handleFunction}>

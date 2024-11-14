@@ -12,12 +12,14 @@ const Navbar = ({ onProfileClick }) => {
     (state) => state.auth.userInfo?.profileImage
   );
 
+  // console.log("profileImage",profileImage);
+
 
   useEffect(() => {
     Util.call_get_with_uri_param("users/auth", (res, status) => {
       // console.log("API Response:", res);
       if (status && res?.user) {
-        // console.log("Profile Image URL:", res.user.profileImage);
+        // console.log("Profile Image URL:", res);
       dispatch(login({ userInfo: res.user , token:res.token  }));
       }
     });
