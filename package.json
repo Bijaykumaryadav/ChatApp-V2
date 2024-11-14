@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon backend/index.js",
     "prod" : "node backend/index.js",
-    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend && echo 'Frontend build completed.'",
+    "build": "npm install && npm install vite@latest --prefix frontend && npm install --prefix frontend && npm run build --prefix frontend && echo 'Frontend build completed.'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bijay Kumar Yadav",
