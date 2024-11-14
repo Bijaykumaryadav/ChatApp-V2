@@ -1,8 +1,9 @@
 import Util from "../helpers/Util";
 
 const getApiUrl = () => {
-  return "https://chat-app-v2-1uxo.vercel.app/apis/v1/";
+  return process.env.REACT_APP_API_URL || "http://localhost:8000/apis/v1/"; // Fallback for development
 };
+
 const constants = {
   URL: getApiUrl(),
   getTokens: () => {
