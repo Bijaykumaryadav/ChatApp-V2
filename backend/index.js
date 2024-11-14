@@ -11,6 +11,7 @@ require("./middleware/passport-google-strategy");
 require("./middleware/passport-jwt-strategy");
 const cors = require("cors");
 const { chatSockets } = require("./middleware/chatSockets");
+const path = require("path");
 
 // for routes to accept the json files
 app.use(express.urlencoded({ extended: true }));
@@ -68,3 +69,19 @@ const server = app.listen(port,() => {
 })
 
 chatSockets(server);
+
+/*---------------------DEPLOYMENT-----------------------*/
+
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname1, "/frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname1, "frontend", "dist", "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("Running on development");
+  });
+}
+
+/*---------------------DEPLOYMENT-----------------------*/
