@@ -20,9 +20,6 @@ const chatSlice = createSlice({
     setSearchedUsers: (state, action) => {
       state.searchedUsers = action.payload;
     },
-    addMessage: (state, action) => {
-      state.messageArray.push(action.payload);
-    },
     setMessageArray: (state, action) => {
       const payload = action.payload;
       if (Array.isArray(payload)) {

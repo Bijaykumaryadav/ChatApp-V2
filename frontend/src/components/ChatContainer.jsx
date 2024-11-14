@@ -57,19 +57,24 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
     };
   }, [chat._id]);
 
-  useEffect(() => {
-    socket.on("newMessage", (newMessageRec) => {
-      if (!chat || chat._id !== newMessageRec.chat._id) {
-        // If message is for another chat, show notification (implement as needed)
-      } else if (newMessageRec.sender._id !== currentUser._id) {
-        dispatch(setMessageArray([...messages, newMessageRec]));
-      }
-    });
+useEffect(() => {
+  socket.on("messageRecieved", (newMessageRec) => {
+    // Check if the message is for the current chat
+          console.log("vv", newMessageRec.sender._id);
+          console.log("cc",chat._id);
+          console.log("ii",currentUser._id);
 
-    return () => {
-      socket.off("newMessage");
-    };
-  }, [chat, messages]);
+    if (newMessageRec.sender._id !== currentUser._id) {
+      console.log("vv", newMessageRec.sender._id);
+      // Update the message array for the current chat
+      dispatch(setMessageArray([...messages, newMessageRec]));
+    }
+  });
+
+  return () => {
+    socket.off("messageRecieved");
+  };
+}, []);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;

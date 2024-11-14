@@ -22,7 +22,7 @@ module.exports.sendMessage = async function (req, res) {
       select: "name email profileImage",
     });
 
-    console.log("message is:",message);
+    // console.log("message is:",message);
 
     await Chat.findOneAndUpdate({ _id: chatId }, { latestMessage: message });
     res.status(200).send(message);
@@ -37,7 +37,7 @@ module.exports.fetchAllMessages = async function (req, res) {
     const messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name profileImage email")
       .populate("chat");
-      console.log("fetch message is:",messages);
+      // console.log("fetch message is:",messages);
 
     res.status(200).send(messages);
   } catch (error) {

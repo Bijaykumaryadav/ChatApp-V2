@@ -1,20 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import ScrollableFeed from "react-scrollable-feed";
+import { setMessageArray } from "../../features/chat/chatSlice";
+import useSocket from "../hooks/useSocket";
 
 const MessageContainer = ({ messages, currentUser, receiverUser, chat }) => {
-  console.log(messages);
-  // console.log("chat is : ", chat)
-
+  const dispatch = useDispatch();
   const scrollContainerRef = useRef(null);
+  const socket = useSocket();
 
-  useEffect(() => {
-    // Scroll to bottom on load
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop =
-        scrollContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   const handleScroll = () => {
     if (scrollContainerRef.current.scrollTop === 0) {
@@ -32,9 +26,7 @@ const MessageContainer = ({ messages, currentUser, receiverUser, chat }) => {
           messages.map((message, index) => (
             <div
               key={index}
-              className={`flex items-start mb-2 ${
-                isCurrentUser(message) ? "justify-end" : "justify-start"
-              }`}
+              className={`flex items-start mb-2 ${isCurrentUser(message) ? "justify-end" : "justify-start"}`}
             >
               {!isCurrentUser(message) && (
                 <img

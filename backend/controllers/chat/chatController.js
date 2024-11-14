@@ -69,6 +69,8 @@ module.exports.fetchChat = async function (req, res) {
       .sort({ updatedAt: -1 })
       .exec();
 
+      console.log("results is:",results);
+
     const populatedResults = await User.populate(results, {
       path: "latestMessage.sender",
       select: "name pic email",
@@ -86,7 +88,7 @@ module.exports.createGroupChat = async function (req, res) {
     return res.status(201).send("Need more than 2 memebers to create group");
   }
   users.push(req.user);
-  console.log("group chat");
+  // console.log("group chat");
   try {
     const groupChat = await Chat.create({
       chatName: req.body.name,
@@ -131,7 +133,7 @@ module.exports.renameChatGroup = async function (req, res) {
 module.exports.addUsers = async function (req, res) {
   try {
     const { chatId, userIds } = req.body; // Change to userIds which should be an array
-    console.log(chatId, userIds);
+    // console.log(chatId, userIds);
 
     const updatedChat = await Chat.findByIdAndUpdate(
       chatId,

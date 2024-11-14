@@ -1,11 +1,11 @@
-const Chat = require("../models/messageSchema"); // Assuming messageSchema holds the chat messages
+const Chat = require("../models/messageSchema");
 require("dotenv").config();
 
 module.exports.chatSockets = function (socketServer) {
   const io = require("socket.io")(socketServer, {
     pingTimeout: 60000,
     cors: {
-      origin: process.env.FRONTEND_URL || "http://localhost:8000", // Ensure this matches your frontend URL
+      origin: process.env.FRONTEND_URL || "http://localhost:8000", 
     },
   });
 
@@ -42,16 +42,14 @@ module.exports.chatSockets = function (socketServer) {
     });
 
     // Listen for new messages
-    socket.on("newMessage", async (newMessageRec) => {
-      const chat = newMessageRec.chat;
-
-      if (!chat || !chat._id || !chat.users) {
-        console.log("Invalid chat structure in newMessage:", newMessageRec);
+    socket.on("newMessage", async(newMessageRec) => {
+      var chat = newMessageRec.chat;
+      if (!chat.users) {
+        console.log(`chat users not defined`);
         return;
       }
-
-      // Emit new message to all users in the chat room, except sender
-      io.to(chat._id).emit("messageReceived", newMessageRec);
+      // to braodcast to all the users of the room expect the sender
+      io.to(chat._id).emit("messageRecieved", newMessageRec);
 
       // Save latest message in the chat collection if needed
       try {
