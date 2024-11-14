@@ -1,16 +1,11 @@
 {
   "rewrites": [
     { "source": "/apis/v1/(.*)", "destination": "/backend/apis/v1/$1" },
-    { "source": "/(.*)", "destination": "/frontend" }
   ],
   "builds": [
     {
       "src": "backend/apis/v1/*.js",
       "use": "@vercel/node"
     },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build"
-    }
   ]
 }
