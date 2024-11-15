@@ -24,7 +24,7 @@ passport.use(
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
       callbackURL:
-        "https://chatapp-v2-3.onrender.com/apis/v1/users/auth/google",
+        "https://chatapp-v2-3.onrender.com/apis/v1/users/auth/google/callback",
     },
     async function (accessToken, refreshToken, profile, done) {
       console.log(profile);
