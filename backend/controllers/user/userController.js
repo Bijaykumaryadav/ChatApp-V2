@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const { sendResponse } = require("../../utils/sendResponse");
 const {
   setInitialProfilePicture,
@@ -10,7 +12,6 @@ const { resetPasswordEmail } = require("../../mailers/resetPasswordEmail");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-require("dotenv").config();
 
 module.exports.signUp = async (req, res) => {
   try {
@@ -371,7 +372,9 @@ module.exports.sendUserDetails = async (req, res) => {
 
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_Key); // Use your secret key here
+    console.log("decoded",decoded);
     const userId = decoded._id;
+    console.log(userId);
 
     // Find the user in the database
     const user = await User.findById(userId).select("name email profileImage");
