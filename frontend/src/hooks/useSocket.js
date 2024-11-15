@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = "http://localhost:8000";
+const SOCKET_SERVER_URL = "https://chat-app-v2-peach.vercel.app";
 
 // Create a socket instance outside the hook to ensure it's reused
 let socket;
