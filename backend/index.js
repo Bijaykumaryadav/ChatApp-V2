@@ -47,6 +47,8 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
   optionsSuccessStatus: 200,
   exposedHeaders: ["Content-Disposition", "Content-Type"],
+  allowedHeaders: ["Authorization", "Content-Type"], // Explicitly allow Authorization header
+
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 
