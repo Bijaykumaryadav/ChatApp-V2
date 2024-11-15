@@ -5,6 +5,10 @@ const getApiUrl = () => {
   return "https://chatapp-v2-3.onrender.com/apis/v1/";
 };
 
+// const getApiUrl = () => {
+//   return "http://localhost:8000/apis/v1/";
+// };
+
 const constants = {
   URL: getApiUrl(),
   getTokens: () => {

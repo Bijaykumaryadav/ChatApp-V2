@@ -29,10 +29,10 @@ const Util = {
   auth: async (dispatch) => {
     const url = `${constants.URL}users/auth`;
     const token = await Util.getTokens();
-    // console.log(token);
+    console.log(token);
 
     if (Util.isTokenExpired(token)) {
-      // console.log(token);
+      console.log(token);
       Util.removeToken();
       return false; // Token expired
     }
@@ -44,7 +44,7 @@ const Util = {
           "Content-Type": "application/json",
         },
       });
-      // console.log("userInfo",res);
+      console.log("userInfo",res);
       dispatch(login({ userInfo: res.data.user , token}));
       return true; // Successfully authenticated
     } catch (error) {

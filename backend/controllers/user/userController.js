@@ -216,7 +216,7 @@ module.exports.signInUser = async (req, res) => {
       const otp = await generateOTP(user._id);
       verifyUserEmail(user, otp);
     }
-    const isMatched = await await bcrypt.compare(password, user.password);
+    const isMatched = await bcrypt.compare(password, user.password);
 
     if (!isMatched) {
       return sendResponse(res, 409, false, "Password mismatch");
