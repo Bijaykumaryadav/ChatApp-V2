@@ -4,10 +4,9 @@
   "description": "This is the backend for the chatapp",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "prod": "node index.js",
-    "build": "npm install",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon backend/index.js",
+    "prod": "node backend/index.js",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "author": "Bijay Kumar Yadav",
   "license": "ISC",

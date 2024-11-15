@@ -1,12 +1,9 @@
 import Util from "../helpers/Util";
 
-const getApiUrl = () => {
-  return "https://chatapp-v2-1.onrender.com/apis/v1/";
-};
 
-// const getApiUrl = () => {
-//   return "http://localhost:8000/apis/v1/";
-// };
+const getApiUrl = () => {
+  return "http://localhost:8000/apis/v1/";
+};
 
 const constants = {
   URL: getApiUrl(),
