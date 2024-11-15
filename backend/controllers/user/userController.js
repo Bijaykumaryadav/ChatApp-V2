@@ -444,4 +444,3 @@ module.exports.searchUser = async (req, res) => {
     sendResponse(res, 500, false, "Failed to fetch users", { error });
   }
 };
-
