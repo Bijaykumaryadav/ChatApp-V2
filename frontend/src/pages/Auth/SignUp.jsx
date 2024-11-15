@@ -67,7 +67,8 @@ const handleSignUp = async (e) => {
   };
 
     const handleGoogleSignIn = () => {
-      window.location.href = "http://localhost:8000/apis/v1/users/auth/google";
+      window.location.href =
+        "https://chatapp-v2-3.onrender.com/apis/v1/users/auth/google";
     };
 
   return (
