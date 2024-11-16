@@ -371,8 +371,9 @@ module.exports.sendUserDetails = async (req, res) => {
       return sendResponse(res, 401, false, "No token provided", null, null);
     }
 
+    console.log("Verifying token...");
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_Key); // Use your secret key here
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Use your secret key here
     console.log("decoded",decoded);
     const userId = decoded._id;
     console.log(userId);
