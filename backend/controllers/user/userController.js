@@ -412,7 +412,7 @@ module.exports.searchUser = async (req, res) => {
     }
 
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_Key); // Use your secret key here
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Use your secret key here
     const userId = decoded._id;
 
     const user = await User.findById(userId);
