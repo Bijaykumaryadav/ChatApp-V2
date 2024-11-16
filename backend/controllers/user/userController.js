@@ -364,6 +364,7 @@ module.exports.sendUserDetails = async (req, res) => {
   try {
     // Retrieve the token from the authorization header
     const token = req.headers.authorization?.split(" ")[1]; // Assuming "Bearer <token>"
+    console.log("token is",token);
 
     // Check if token is provided
     if (!token) {
