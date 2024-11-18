@@ -2,9 +2,9 @@
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 
-// const SOCKET_SERVER_URL = "https://chatapp-v2-3.onrender.com";
+const SOCKET_SERVER_URL = "https://chatapp-v2-3.onrender.com";
 
-const SOCKET_SERVER_URL = "http://localhost:8000";
+// const SOCKET_SERVER_URL = "http://localhost:8000";
 
 // Create a socket instance outside the hook to ensure it's reused
 let socket;
