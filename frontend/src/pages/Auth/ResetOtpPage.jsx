@@ -81,7 +81,7 @@ function OtpPage({email}) {
           </button>
           <button
             type="button"
-            className="flex justify-center items-center w-full mt-4 text-red-500 font-semibold hover:text-red-700"
+            className="flex items-center justify-center w-full mt-4 font-semibold text-red-500 hover:text-red-700"
             onClick={() => setShowOverlay(false)}
           >
             Cancel

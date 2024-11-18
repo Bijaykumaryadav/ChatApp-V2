@@ -1,23 +1,30 @@
-import React, { useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useRef } from "react";
+import { useSelector } from "react-redux";
 import ScrollableFeed from "react-scrollable-feed";
-import { setMessageArray } from "../../features/chat/chatSlice";
-import useSocket from "../hooks/useSocket";
 
-const MessageContainer = ({ messages, currentUser, chat }) => {
-  const dispatch = useDispatch();
+const MessageContainer = ({ messages, currentUser }) => {
   const scrollContainerRef = useRef(null);
-  const socket = useSocket();
-  // console.log("Receiver user",receiverUser);
-
+  const chat = useSelector((state) => state.chat.chats);
 
   const handleScroll = () => {
     if (scrollContainerRef.current.scrollTop === 0) {
+      // Handle logic for scrolling to the top (e.g., loading more messages)
     }
   };
 
-  // Check if the message sender is the current user
+  // Function to determine if the message sender is the current user
   const isCurrentUser = (message) => message?.sender?._id === currentUser?._id;
+
+  // Get the receiver's details from `chat[0].users`
+  const getReceiverDetails = () => {
+    if (chat?.[0]?.users && chat[0].users.length === 2) {
+      // Filter the user whose ID is not the current user's ID
+      return chat[0].users.find((user) => user._id !== currentUser?._id);
+    }
+    return null; // Return null if no receiver is found
+  };
+
+  const receiver = getReceiverDetails();
 
   return (
     <div ref={scrollContainerRef} onScroll={handleScroll} className="h-[68vh]">
@@ -26,12 +33,15 @@ const MessageContainer = ({ messages, currentUser, chat }) => {
           messages.map((message, index) => (
             <div
               key={index}
-              className={`flex items-start mb-2 ${isCurrentUser(message) ? "justify-end" : "justify-start"}`}
+              className={`flex items-start mb-2 ${
+                isCurrentUser(message) ? "justify-end" : "justify-start"
+              }`}
             >
-              {!isCurrentUser(message) && (
+              {/* Show receiver's profile image for incoming messages */}
+              {!isCurrentUser(message) && receiver && (
                 <img
-                  src={chat?.profileImage}
-                  alt="Receiver profile"
+                  src={receiver?.profileImage}
+                  alt={receiver?.name || "Receiver"}
                   className="w-8 h-8 mr-2 rounded-full"
                 />
               )}

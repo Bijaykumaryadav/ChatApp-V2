@@ -12,13 +12,27 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
   const socket = useSocket();
   const messages = useSelector((state) => state.chat.messageArray);
   const currentUser = useSelector((state) => state.auth.userInfo);
-  const receiverUser = useSelector(activeChatSelector);
+  const chatDetails = useSelector((state) => state.chat.chats);
 
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  console.log("Chat is is:",chat._id);
+  console.log("Chat ID:", chat._id);
+  console.log("Chat Details:", chatDetails);
+
+  // Determine the receiver's details based on `chatDetails`
+  const getReceiverDetails = () => {
+    const currentChat = chatDetails?.find((c) => c._id === chat._id);
+
+    if (currentChat && currentChat.users?.length === 2) {
+      // Filter the user whose ID is not the current user's ID
+      return currentChat.users.find((user) => user._id !== currentUser._id);
+    }
+    return null; // Return null if no valid receiver is found
+  };
+
+  const receiver = getReceiverDetails();
 
   const fetchAllMessages = async () => {
     try {
@@ -27,12 +41,12 @@ const ChatContainer = ({ chat, onContactProfileClick, onBackClick }) => {
         messageUri,
         (data, success) => {
           if (success) {
-            console.log("fetched data is",data);
+            console.log("Fetched messages:", data);
             dispatch(setMessageArray(data));
             socket.emit("joinChat", chat._id);
           } else {
             console.error("Failed to fetch messages", data);
-          } 
+          }
         },
         null,
         "json"
@@ -71,10 +85,10 @@ useEffect(() => {
     }
   });
 
-  return () => {
-    socket.off("messageRecieved");
-  };
-}, []);
+    return () => {
+      socket.off("messageRecieved");
+    };
+  }, [messages, chat._id]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -90,8 +104,6 @@ useEffect(() => {
       (data, success) => {
         if (success) {
           dispatch(setMessageArray([...messages, data]));
-          console.log("messages is ",...messages);
-          console.log("post data",data);
           setNewMessage("");
           socket.emit("newMessage", data);
         } else {
@@ -121,26 +133,35 @@ useEffect(() => {
 
   return (
     <div className="flex flex-col flex-grow p-4 pb-[5vh] bg-white border border-gray-300 rounded-lg overflow-visible h-[90vh]">
+      {/* Header with receiver's profile */}
       <div className="flex items-center pb-2 mb-4 border-b">
         <FaArrowLeft
           className="block mr-4 text-gray-500 cursor-pointer md:hidden"
           onClick={onBackClick}
         />
-        <img
-          src={chat.profileImage}
-          alt="Profile"
-          className="w-10 h-10 mr-4 rounded-full cursor-pointer"
-          onClick={onContactProfileClick}
-        />
-        <h2 className="text-xl">{chat.name}</h2>
+        {receiver && (
+          <>
+            <img
+              src={receiver?.profileImage}
+              alt={receiver?.name || "Receiver"}
+              className="w-10 h-10 mr-4 rounded-full cursor-pointer"
+              onClick={onContactProfileClick}
+            />
+            <h2 className="text-xl">{receiver?.name}</h2>
+          </>
+        )}
         {isTyping && <p className="ml-4 text-sm text-gray-500">Typing...</p>}
       </div>
+
+      {/* Messages */}
       <MessageContainer
         messages={messages}
-        receiverUser={receiverUser}
+        receiverUser={receiver}
         currentUser={currentUser}
         chat={chat}
       />
+
+      {/* Input for sending messages */}
       <div className="flex items-center mt-2 xl:mx-16">
         <input
           type="text"

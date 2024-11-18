@@ -30,9 +30,10 @@ const UserView = ({ userId, searchedUser, handleFunction }) => {
   const createChat = async (userId) => {
     try {
       await Util.call_Post_by_URI("chats", { userId }, (data, status) => {
+        console.log(data);
         if (status) {
           // Update the chats in the Redux store
-          dispatch(setChats([...chats, data]));
+          dispatch(setChats(data));
 
           // Set the new chat as the active chat
           dispatch(setActiveChat(data));
@@ -50,7 +51,7 @@ const UserView = ({ userId, searchedUser, handleFunction }) => {
 
   return (
     <div
-      className="flex items-center gap-2 border-b border-gray-400 cursor-pointer hover:bg-gray-400 m-4"
+      className="flex items-center gap-2 m-4 border-b border-gray-400 cursor-pointer hover:bg-gray-400"
       onClick={() => createChat(searchedUser._id)}
     >
       <div className="p-2 imageContainer" onClick={handleFunction}>

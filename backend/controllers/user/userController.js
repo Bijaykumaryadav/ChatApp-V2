@@ -199,40 +199,51 @@ module.exports.resendResetOtp = async (req, res) => {
 module.exports.signInUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Check if email and password are provided
     if (!email || !password) {
+      return sendResponse(res, 400, false, "Please fill all the details", null, null);
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return sendResponse(res, 404, false, "User does not exist");
+    }
+
+    // Check if the user's email is verified
+    if (!user.isVerified) {
+      const otp = await generateOTP(user._id);
+      verifyUserEmail(user, otp);
       return sendResponse(
         res,
-        400,
+        401,
         false,
-        "Please fill all the details",
+        "Email not verified. Verification email has been resent.",
         null,
         null
       );
     }
-    const user = await User.findOne({ email });
-    if (!user) {
-      return sendResponse(res, 404, false, "User doesnot exist");
-    }
-    if (!user.isVerified) {
-      const otp = await generateOTP(user._id);
-      verifyUserEmail(user, otp);
-    }
-    const isMatched = await bcrypt.compare(password, user.password);
 
+    // Check if the password matches
+    const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
       return sendResponse(res, 409, false, "Password mismatch");
     }
-    const token = await jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
+
+    // Generate JWT token
+    const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: "30d",
     });
-    return sendResponse(res, 200, true, "login successfull", { token }, null);
+
+    // Successful login
+    return sendResponse(res, 200, true, "Login successful", { token }, null);
   } catch (error) {
-    console.error(`Error in login ${error}`);
-    return sendResponse(res, 500, false, "Error in login", null, {
-      error,
-    });
+    console.error(`Error in login: ${error}`);
+    return sendResponse(res, 500, false, "Error in login", null, { error });
   }
 };
+
 
 module.exports.resetPasswordEmail = async (req, res) => {
   try {

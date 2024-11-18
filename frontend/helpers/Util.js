@@ -94,40 +94,58 @@ const Util = {
     }
   },
 
-  call_Post_by_URI: async (uri, collection, callback, type) => {
-    const url = constants.URL + uri;
-    const token = "Bearer " + (await Util.getTokens());
-    const typeValue =
-      type === "multipart" ? "multipart/form-data" : "application/json";
+call_Post_by_URI: async (uri, collection, callback, type) => {
+  const url = constants.URL + uri;
+  const token = "Bearer " + (await Util.getTokens());
+  const typeValue =
+    type === "multipart" ? "multipart/form-data" : "application/json";
 
-    try {
-      const res = await callApi_post(url, collection, token, typeValue);
-      if (callback) callback(res.data, true);
-    } catch (error) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message
-          ? error?.response?.data?.message
-          : "Something went wrong! Please try again later.",
-        { autoClose: 2000 }
-      );
-      if (error.response) {
-        console.log("post error =====> ", error.response);
-        if (error.response.statusText === "Unauthorized") {
-          console.log("Unauthorized");
-          Util.removeToken();
-        } else if (error.response.status === 409) {
-          console.log("Conflict: User exists but email not verified.");
-          // Handle the 409-specific logic here (e.g., showing a message to the user)
-          if (callback) callback(error.response.data, false);
-        } else {
-          if (callback) callback(error.response.data, false);
-        }
+  try {
+    // Make the POST request
+    const res = await callApi_post(url, collection, token, typeValue);
+
+    // On success, call the callback with data and success = true
+    if (callback) callback(res.data, true);
+  } catch (error) {
+    console.error("Error in POST request:", error);
+
+    // Show an error toast for general errors
+    toast.error(
+      error?.response?.data?.message ||
+        "Something went wrong! Please try again later.",
+      { autoClose: 2000 }
+    );
+
+    // Handle error responses
+    if (error.response) {
+      console.log("Post error =====> ", error.response);
+
+      const status = error.response.status;
+      const message = error.response.data?.message || "An error occurred.";
+
+      // Handle 401 Unauthorized
+      if (status === 401) {
+        console.log("Unauthorized access. Possibly unverified email.");
+        Util.removeToken(); // Remove token if unauthorized
+        if (callback) callback({ message, status }, false); // Pass status and message to callback
       }
+      // Handle 409 Conflict (e.g., user exists but email not verified)
+      else if (status === 409) {
+        console.log("Conflict: User exists but email not verified.");
+        if (callback) callback({ message, status }, false);
+      }
+      // Handle other error statuses
+      else {
+        if (callback) callback({ message, status }, false);
+      }
+    } else {
+      // If no response is available, still call the callback with a generic error
+      if (callback) callback({ message: "An unknown error occurred." }, false);
     }
-  },
+  }
+},
 
-  call_Put_by_URI: async (uri, collection, callback, type) => {
+call_Put_by_URI: async (uri, collection, callback, type) => {
     const url = constants.URL + uri;
     const token = "Bearer " + (await Util.getTokens());
     const typeValue =
